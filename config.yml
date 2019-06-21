@@ -1,13 +1,13 @@
 node:
   name: test-mysql01
 mysql:
-  user: mgrtest
-  password: Gtu,0620Yd
-  host: 192.168.29.129
+  user:
+  password:
+  host:
   port: 3306
   name: performance_schema
 logpath:
-  path: /Users/huanghongzhi/go/src/simple-mysql-mgp-hook/hook.log
+  path:
 heartbeat:
   interval: 5
   command:
