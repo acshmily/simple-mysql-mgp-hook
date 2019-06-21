@@ -18,9 +18,13 @@
        path: ##日志路径
      heartbeat:
        interval: 5 ## 心跳检测 单位为妙
-       command: ## 执行的相关命令
+       downcommand: ## down的时候执行的相关命令
          - balabla
          - balabla
+       upcommand: ## 恢复时候的命令
+        - balbal
+        - balala
+       
   ```
 
 需要创建一个用户并且给予权限访问 **performance_schema** 库的 **select** 权限
