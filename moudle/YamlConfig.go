@@ -19,7 +19,8 @@ type YamlConfig struct {
 
 	// 定义间隔
 	Heartbeat struct {
-		Interval int      `yaml:"interval"`
-		Command  []string `yaml:"command,flow"`
+		Interval    int      `yaml:"interval"`
+		Downcommand []string `yaml:"downcommand,flow"`
+		Upcommand   []string `yaml:"upcommand,flow"`
 	}
 }

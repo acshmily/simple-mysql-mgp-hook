@@ -10,6 +10,9 @@ logpath:
   path:
 heartbeat:
   interval: 5
-  command:
+  downcommand:
+    - ll
+    - ls
+  upcommand:
     - ll
     - ls

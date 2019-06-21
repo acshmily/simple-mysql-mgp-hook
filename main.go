@@ -14,11 +14,11 @@ import (
 	"strings"
 	"time"
 )
-import _ "database/sql"
-import _ "github.com/go-sql-driver/mysql"
 
 var path string
 var conf *moudle.YamlConfig
+var beforeStatus = true
+var nowStatus = true
 
 func CheckErr(err error) {
 	if err != nil {
@@ -93,9 +93,11 @@ func doQuery(db *sql.DB) bool {
 
 	if member_status != "ONLINE" {
 		log.Printf("[error] 当前节点状态:%v ,状态异常执行相关操作", member_status)
+
 		return false
 	} else {
 		log.Printf("[info] 当前节点状态:%v ,状态正常", member_status)
+
 		return true
 	}
 }
@@ -103,8 +105,8 @@ func doQuery(db *sql.DB) bool {
 /**
 执行配置命令
 */
-func execCommand() {
-	list := conf.Heartbeat.Command
+func execCommand(list []string) {
+
 	for i := 0; i < len(list); i++ {
 		log.Printf("[info] 开始执行命令:%v", list[i])
 		cmd := exec.Command("bash", "-c", list[i])
@@ -143,10 +145,17 @@ func main() {
 	db := createDB()
 	defer db.Close()
 	for i := 0; ; i++ {
-		// 如果检测失败了
-		if !doQuery(db) {
-			// do
-			execCommand()
+		nowStatus = doQuery(db)
+		// 前后状态不一致, 则进行程序hook触发
+		if nowStatus != beforeStatus {
+			// 修改为一致状态
+			beforeStatus = nowStatus
+			if nowStatus { // 恢复执行
+				execCommand(conf.Heartbeat.Upcommand)
+			} else { // 异常执行
+				execCommand(conf.Heartbeat.Downcommand)
+			}
+
 		}
 		//心跳间隔
 		time.Sleep(time.Duration(conf.Heartbeat.Interval) * time.Second)
