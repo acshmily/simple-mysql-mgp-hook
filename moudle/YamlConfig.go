@@ -19,8 +19,11 @@ type YamlConfig struct {
 
 	// 定义间隔
 	Heartbeat struct {
-		Interval    int      `yaml:"interval"`
-		Downcommand []string `yaml:"downcommand,flow"`
-		Upcommand   []string `yaml:"upcommand,flow"`
+		Interval    int               `yaml:"interval"`
+		Sql         string            `yaml:"sql"`
+		Query       map[string]string `yaml:"query-key-value,flow"`
+		Checkvalue  string            `yaml:"check-value"`
+		Downcommand []string          `yaml:"downcommand,flow"`
+		Upcommand   []string          `yaml:"upcommand,flow"`
 	}
 }

@@ -14,6 +14,8 @@ import (
 	"strings"
 	"time"
 )
+import _ "database/sql"
+import _ "github.com/go-sql-driver/mysql"
 
 var path string
 var conf *moudle.YamlConfig
@@ -85,14 +87,29 @@ func doQuery(db *sql.DB) bool {
 		fmt.Printf("error:%v", err)
 	}
 	var member_status string
-	query_error := db.QueryRow("select MEMBER_STATE from performance_schema.replication_group_members where MEMBER_HOST = '" + conf.Node.Name + "' ;").Scan(&member_status)
+	//"select MEMBER_STATE from performance_schema.replication_group_members where MEMBER_HOST = '" + conf.Node.Name + "' ;"
+	// 构造查询条件
+	querystr := ""
+	// 如果有查询条件
+	if conf.Heartbeat.Query != nil && len(conf.Heartbeat.Query) > 0 {
+		querystr += " where "
+		for k, v := range conf.Heartbeat.Query {
+			querystr += k + "=" + v
+		}
+		querystr += ";"
+	}
+	log.Printf("[info] 心跳检测语句: %v", conf.Heartbeat.Sql+querystr)
+	//fmt.Printf("[info] 心跳检测语句: %v",conf.Heartbeat.Sql + querystr)
+	//query_error := db.QueryRow("select MEMBER_STATE from performance_schema.replication_group_members where  = '" + conf.Node.Name + "' ;").Scan(&member_status)
+	query_error := db.QueryRow(conf.Heartbeat.Sql + querystr).Scan(&member_status)
+
 	if query_error != nil {
 		log.Printf("[error] 发生错误: %v ,该节点未查询到记录,请检查配置文件", query_error)
 		CheckErr(query_error)
 	}
 
-	if member_status != "ONLINE" {
-		log.Printf("[error] 当前节点状态:%v ,状态异常执行相关操作", member_status)
+	if member_status != conf.Heartbeat.Checkvalue {
+		log.Printf("[error] 当前节点状态:%v ,状态异常", member_status)
 
 		return false
 	} else {
@@ -151,8 +168,10 @@ func main() {
 			// 修改为一致状态
 			beforeStatus = nowStatus
 			if nowStatus { // 恢复执行
+				log.Printf("[info] 当前节点状态恢复正常,执行恢复hook命令")
 				execCommand(conf.Heartbeat.Upcommand)
 			} else { // 异常执行
+				log.Printf("[error] 当前节点状态发生异常,执行异常hook命令")
 				execCommand(conf.Heartbeat.Downcommand)
 			}
 

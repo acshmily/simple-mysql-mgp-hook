@@ -1,18 +1,24 @@
 node:
   name: test-mysql01
 mysql:
-  user:
-  password:
-  host:
+  user: dba
+  password: root
+  host: 192.168.38.132
   port: 3306
-  name: performance_schema
+  name: test
 logpath:
-  path:
+  path: ##日志路径
 heartbeat:
   interval: 5
+  check-value: ONLINE
+  ## sql 语句
+  sql: select field1 from check_table
+  ## 查询条件 (字段名:值,可以为多个 需要符合yaml格式规范)
+  query-key-value:
+    id : 1
+
   downcommand:
-    - ll
-    - ls
+    - service firewalld start
   upcommand:
-    - ll
+    - service firewalld stop
     - ls
