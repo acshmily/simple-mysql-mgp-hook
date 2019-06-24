@@ -38,7 +38,7 @@
 
 节点内名字必须正确,否则程序启动失败
    
-##hearbeat解析
+## hearbeat解析
 hearbeat内**command**为列表配置,当检测到不在集群内会顺序执行配置的命令
 
 hearbeat内**sql** 为查询基本语句,**query-key-value**为查询条件(可以为多个)
@@ -54,7 +54,7 @@ select field1 from check_table where id = 1
 ```
 比对**field1** 是否等于check-value预定值,如果不为期望值则执行**downcommand**内所有命令
 
-##logpath
+## logpath
 logpath内的**path** 默认不指定的情况下会在执行文件的当前目录下生成hook.log文件
 
 ## 相关命令
