@@ -16,6 +16,7 @@ heartbeat:
   ## 查询条件 (字段名:值,可以为多个 需要符合yaml格式规范)
   query-key-value:
     id : 1
+    field1 : ONLINE
 
   downcommand:
     - service firewalld start

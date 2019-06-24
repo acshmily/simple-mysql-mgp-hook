@@ -94,8 +94,10 @@ func doQuery(db *sql.DB) bool {
 	if conf.Heartbeat.Query != nil && len(conf.Heartbeat.Query) > 0 {
 		querystr += " where "
 		for k, v := range conf.Heartbeat.Query {
-			querystr += k + "=" + v
+			querystr += k + "='" + v + "' and "
 		}
+		// 剔除 最后一个and
+		querystr = querystr[0:(len(querystr) - 4)]
 		querystr += ";"
 	}
 	log.Printf("[info] 心跳检测语句: %v", conf.Heartbeat.Sql+querystr)
